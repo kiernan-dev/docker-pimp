@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronUp } from 'lucide-react'
 import Header from '@/components/Header'
@@ -19,6 +19,11 @@ export default function Home() {
   const [showPopularOnly, setShowPopularOnly] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [showBackToTop, setShowBackToTop] = useState(false)
+  const [cardMinHeight, setCardMinHeight] = useState<number | null>(null)
+  const [isCalculatingHeights, setIsCalculatingHeights] = useState(false)
+  
+  // Refs for height calculation
+  const gridRef = useRef<HTMLDivElement>(null)
 
   // Load favorites on mount
   useEffect(() => {
@@ -86,6 +91,40 @@ export default function Home() {
       )
     }
   }
+
+  // Height calculation function
+  const calculateCardHeights = useCallback(() => {
+    if (!gridRef.current) return
+    
+    setIsCalculatingHeights(true)
+    
+    // Small delay to ensure all cards are rendered
+    setTimeout(() => {
+      const cardElements = gridRef.current?.querySelectorAll('[data-card-content]')
+      if (!cardElements || cardElements.length === 0) {
+        setIsCalculatingHeights(false)
+        return
+      }
+      
+      let maxHeight = 0
+      cardElements.forEach((card) => {
+        const cardElement = card as HTMLElement
+        // Get the actual height of the collapsed card
+        const height = cardElement.getBoundingClientRect().height
+        maxHeight = Math.max(maxHeight, height)
+      })
+      
+      setCardMinHeight(maxHeight)
+      setIsCalculatingHeights(false)
+    }, 100)
+  }, [])
+
+  // Calculate heights when filtered commands change
+  useEffect(() => {
+    if (filteredCommands.length > 0 && mounted) {
+      calculateCardHeights()
+    }
+  }, [filteredCommands, mounted, calculateCardHeights])
 
   // Scroll to top function
   const scrollToTop = () => {
@@ -194,26 +233,50 @@ export default function Home() {
         </motion.div>
 
         {/* Commands Grid */}
-        <AnimatePresence mode="wait">
-          {filteredCommands.length > 0 ? (
-            <motion.div
-              key={`${activeCategories.join('-')}-${showFavorites}-${showPopularOnly}-${searchTerm}`}
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
-            >
-              {filteredCommands.map((command) => (
-                <motion.div key={command.id} variants={itemVariants}>
-                  <CommandCard
-                    command={command}
-                    isFavorite={favorites.includes(command.id)}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
+        <div className="relative">
+          {/* Loading Overlay */}
+          <AnimatePresence>
+            {isCalculatingHeights && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg"
+              >
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="w-8 h-8 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Optimizing layout...</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence mode="wait">
+            {filteredCommands.length > 0 ? (
+              <motion.div
+                ref={gridRef}
+                key={`${activeCategories.join('-')}-${showFavorites}-${showPopularOnly}-${searchTerm}`}
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="flex flex-wrap gap-6"
+              >
+                {filteredCommands.map((command) => (
+                  <motion.div 
+                    key={command.id} 
+                    variants={itemVariants}
+                    className="w-full lg:w-[calc(50%-12px)] xl:w-[calc(33.333%-16px)]"
+                  >
+                    <CommandCard
+                      command={command}
+                      isFavorite={favorites.includes(command.id)}
+                      onToggleFavorite={handleToggleFavorite}
+                      minHeight={cardMinHeight}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
           ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -243,7 +306,8 @@ export default function Home() {
               </motion.button>
             </motion.div>
           )}
-        </AnimatePresence>
+          </AnimatePresence>
+        </div>
       </main>
 
       {/* Footer */}

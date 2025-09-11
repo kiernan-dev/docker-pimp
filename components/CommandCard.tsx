@@ -9,9 +9,10 @@ interface CommandCardProps {
   command: DockerCommand
   isFavorite: boolean
   onToggleFavorite: (commandId: string) => void
+  minHeight?: number | null
 }
 
-export default function CommandCard({ command, isFavorite, onToggleFavorite }: CommandCardProps) {
+export default function CommandCard({ command, isFavorite, onToggleFavorite, minHeight }: CommandCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -94,7 +95,11 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent dark:from-slate-600/15 dark:to-transparent" />
         
         {/* Card Content */}
-        <div className="relative p-6">
+        <div 
+          className="relative p-6 flex flex-col" 
+          data-card-content
+          style={minHeight ? { minHeight: `${minHeight}px` } : undefined}
+        >
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
@@ -113,7 +118,7 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
                   )}
                 </div>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed min-h-[4.2rem]">
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                 {command.description}
               </p>
             </div>
@@ -168,8 +173,8 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
             
             {/* Command Block with Glassmorphic Style */}
             <div className="relative group/code">
-              <div className="bg-gray-900/80 dark:bg-black/60 backdrop-blur-sm border border-gray-700/50 text-green-400 font-mono text-sm p-4 rounded-lg overflow-x-auto">
-                <code className="block">{command.example}</code>
+              <div className="bg-gray-900/80 dark:bg-black/60 backdrop-blur-sm border border-gray-700/50 text-green-400 font-mono text-sm p-4 rounded-lg overflow-auto">
+                <code className="block whitespace-pre-wrap break-all">{command.example}</code>
               </div>
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -196,83 +201,85 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
             ))}
           </div>
 
-          {/* Expand Button */}
-          {(command.syntax || command.flags) && (
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center justify-center w-full p-3 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors rounded-lg bg-white/10 dark:bg-gray-700/10 backdrop-blur-sm border border-white/20 dark:border-gray-600/20 hover:bg-white/20 dark:hover:bg-gray-600/20"
-            >
-              <span className="mr-2">
-                {isExpanded ? 'Show less' : 'Show details'}
-              </span>
-              {isExpanded ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </motion.button>
-          )}
-        </div>
-
-        {/* Expanded Content */}
-        <motion.div
-          variants={contentVariants}
-          initial="collapsed"
-          animate={isExpanded ? "expanded" : "collapsed"}
-          className="overflow-hidden"
-        >
-          <div className="px-6 pb-6 border-t border-white/10 dark:border-gray-700/20 pt-4">
-            {/* Syntax */}
-            {command.syntax && (
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Syntax:
-                  </h4>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    onClick={() => copyToClipboard(command.syntax!)}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                  >
-                    Copy
-                  </motion.button>
-                </div>
-                <div className="bg-gray-900/80 dark:bg-black/60 backdrop-blur-sm border border-gray-700/50 text-green-400 font-mono text-sm p-3 rounded-lg overflow-x-auto">
-                  <code>{command.syntax}</code>
-                </div>
-              </div>
-            )}
-
-            {/* Flags */}
-            {command.flags && command.flags.length > 0 && (
-              <div>
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                  Common Options:
-                </h4>
-                <div className="space-y-2">
-                  {command.flags.map((flag, index) => (
-                    <motion.div
-                      key={flag.flag}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="flex items-start space-x-3 p-3 bg-white/10 dark:bg-gray-700/10 backdrop-blur-sm border border-white/20 dark:border-gray-600/20 rounded-lg"
+          {/* Expanded Content */}
+          <motion.div
+            variants={contentVariants}
+            initial="collapsed"
+            animate={isExpanded ? "expanded" : "collapsed"}
+            className="overflow-hidden"
+          >
+            <div className="px-0 pb-4 border-t border-white/10 dark:border-gray-700/20 pt-4">
+              {/* Syntax */}
+              {command.syntax && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Syntax:
+                    </h4>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => copyToClipboard(command.syntax!)}
+                      className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     >
-                      <code className="bg-white/20 dark:bg-gray-600/20 backdrop-blur-sm text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono text-sm flex-shrink-0 border border-white/20 dark:border-gray-500/20">
-                        {flag.flag}
-                      </code>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {flag.description}
-                      </p>
-                    </motion.div>
-                  ))}
+                      Copy
+                    </motion.button>
+                  </div>
+                  <div className="bg-gray-900/80 dark:bg-black/60 backdrop-blur-sm border border-gray-700/50 text-green-400 font-mono text-sm p-3 rounded-lg overflow-x-auto">
+                    <code>{command.syntax}</code>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Flags */}
+              {command.flags && command.flags.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    Common Options:
+                  </h4>
+                  <div className="space-y-2">
+                    {command.flags.map((flag, index) => (
+                      <motion.div
+                        key={flag.flag}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex items-start space-x-3 p-3 bg-white/10 dark:bg-gray-700/10 backdrop-blur-sm border border-white/20 dark:border-gray-600/20 rounded-lg"
+                      >
+                        <code className="bg-white/20 dark:bg-gray-600/20 backdrop-blur-sm text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-mono text-sm flex-shrink-0 border border-white/20 dark:border-gray-500/20">
+                          {flag.flag}
+                        </code>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {flag.description}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Expand Button */}
+          <div className="mt-auto">
+            {(command.syntax || command.flags) && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex items-center justify-center w-full p-3 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors rounded-lg bg-white/10 dark:bg-gray-700/10 backdrop-blur-sm border border-white/20 dark:border-gray-600/20 hover:bg-white/20 dark:hover:bg-gray-600/20"
+              >
+                <span className="mr-2">
+                  {isExpanded ? 'Show less' : 'Show details'}
+                </span>
+                {isExpanded ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </motion.button>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   )
