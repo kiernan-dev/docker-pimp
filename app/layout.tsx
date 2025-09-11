@@ -34,8 +34,9 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen`}>
         {/* Animated Gradient Background */}
         <div className="fixed inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-blue-100 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 animate-gradient" />
-          <div className="absolute inset-0 bg-gradient-to-tr from-purple-100/50 via-pink-100/30 to-blue-100/50 dark:from-purple-900/30 dark:via-pink-900/20 dark:to-blue-900/30 animate-gradient-reverse" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-purple-100 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 animate-gradient" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-purple-100/70 via-blue-100/50 to-indigo-100/70 dark:from-purple-900/30 dark:via-pink-900/20 dark:to-blue-900/30 animate-gradient-reverse" />
+          <div className="absolute inset-0 bg-gradient-to-bl from-blue-100/30 via-purple-100/20 to-indigo-100/30 dark:opacity-0" />
         </div>
 
         <div className="relative min-h-screen">

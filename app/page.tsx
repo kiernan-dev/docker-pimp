@@ -48,8 +48,8 @@ export default function Home() {
   const filteredCommands = useMemo(() => {
     let commands = dockerCommands
 
-    // Filter by search term
-    if (searchTerm) {
+    // Filter by search term (only if 2+ characters)
+    if (searchTerm && searchTerm.length >= 2) {
       commands = searchCommands(searchTerm)
     }
 
@@ -252,7 +252,22 @@ export default function Home() {
           </AnimatePresence>
 
           <AnimatePresence mode="wait">
-            {filteredCommands.length > 0 ? (
+            {searchTerm.length === 1 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="text-center py-16"
+              >
+                <div className="text-4xl mb-4">⌨️</div>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Keep typing...
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Enter at least 2 characters to search
+                </p>
+              </motion.div>
+            ) : filteredCommands.length > 0 ? (
               <motion.div
                 ref={gridRef}
                 key={`${activeCategories.join('-')}-${showFavorites}-${showPopularOnly}-${searchTerm}`}

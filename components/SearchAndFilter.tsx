@@ -75,7 +75,7 @@ export default function SearchAndFilter({
         <input
           id="searchInput"
           type="text"
-          placeholder="Search Docker commands, descriptions, or tags..."
+          placeholder="Search Docker commands, descriptions, or tags... (2+ chars)"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full pl-12 pr-12 py-4 bg-white/10 dark:bg-slate-700/30 backdrop-blur-xl border border-white/30 dark:border-slate-500/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-300 shadow-xl text-lg ring-1 ring-white/20 dark:ring-slate-400/20"
