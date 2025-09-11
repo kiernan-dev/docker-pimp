@@ -53,9 +53,9 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
     >
       {/* Glassmorphic Card */}
       <div className="relative bg-white/20 dark:bg-slate-800/40 backdrop-blur-xl border border-white/20 dark:border-slate-600/40 rounded-2xl shadow-xl overflow-hidden">
-        {/* Animated Gradient Background Overlay */}
+        {/* Animated Gradient Background Overlay - Light Mode */}
         <motion.div 
-          className="absolute inset-0"
+          className="absolute inset-0 dark:hidden"
           animate={{
             background: [
               'linear-gradient(45deg, rgba(255,255,255,0.25) 0%, rgba(59,130,246,0.15) 50%, rgba(255,255,255,0.25) 100%)',
@@ -63,6 +63,25 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
               'linear-gradient(225deg, rgba(168,85,247,0.15) 0%, rgba(59,130,246,0.15) 50%, rgba(255,255,255,0.25) 100%)',
               'linear-gradient(315deg, rgba(255,255,255,0.25) 0%, rgba(168,85,247,0.15) 50%, rgba(59,130,246,0.15) 100%)',
               'linear-gradient(45deg, rgba(255,255,255,0.25) 0%, rgba(59,130,246,0.15) 50%, rgba(255,255,255,0.25) 100%)'
+            ]
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        {/* Animated Gradient Background Overlay - Dark Mode */}
+        <motion.div 
+          className="absolute inset-0 hidden dark:block"
+          animate={{
+            background: [
+              'linear-gradient(45deg, rgba(15,23,42,0.4) 0%, rgba(30,58,138,0.25) 50%, rgba(15,23,42,0.4) 100%)',
+              'linear-gradient(135deg, rgba(30,58,138,0.25) 0%, rgba(15,23,42,0.4) 50%, rgba(88,28,135,0.25) 100%)',
+              'linear-gradient(225deg, rgba(88,28,135,0.25) 0%, rgba(30,58,138,0.25) 50%, rgba(15,23,42,0.4) 100%)',
+              'linear-gradient(315deg, rgba(15,23,42,0.4) 0%, rgba(88,28,135,0.25) 50%, rgba(30,58,138,0.25) 100%)',
+              'linear-gradient(45deg, rgba(15,23,42,0.4) 0%, rgba(30,58,138,0.25) 50%, rgba(15,23,42,0.4) 100%)'
             ]
           }}
           transition={{
