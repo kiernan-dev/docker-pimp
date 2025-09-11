@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Search, X, Star, Heart, PlayCircle, Package, Box, Network, HardDrive, Layers, Settings, Key, Globe, Users, Cloud, Server, Puzzle, Lock } from 'lucide-react'
+import { Search, X, Star, Heart, PlayCircle, Package, Box, Network, HardDrive, Layers, Settings, Key, Globe, Users, Cloud, Server, Puzzle, Lock, ChevronDown, ChevronUp, Filter } from 'lucide-react'
 import { useState } from 'react'
 
 interface Category {
@@ -38,7 +38,7 @@ export default function SearchAndFilter({
   categories,
   showFiltersOnly = false
 }: SearchAndFilterProps) {
-  const [showFilters, setShowFilters] = useState(true)
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false)
 
   // Icon mapping
   const iconMap = {
@@ -73,6 +73,7 @@ export default function SearchAndFilter({
       <div className="relative">
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
         <input
+          id="searchInput"
           type="text"
           placeholder="Search Docker commands, descriptions, or tags..."
           value={searchTerm}
@@ -101,114 +102,147 @@ export default function SearchAndFilter({
 
   // Show only filters for scrollable section
   return (
-
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-medium text-gray-700 dark:text-gray-300">
-          Filter by Category
-        </h3>
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          {totalResults} result{totalResults !== 1 ? 's' : ''}
-        </div>
-      </div>
-
-      {/* Category Filter Bubbles */}
-      <div className="flex flex-wrap gap-1.5">
-        {/* All Commands */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => onCategoryChange(null)}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
-            activeCategories.length === 0
-              ? 'bg-docker-blue/20 border-docker-blue/30 text-docker-blue dark:text-docker-lightblue shadow-lg'
-              : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
-          }`}
-        >
-          <Layers className="w-3 h-3" />
-          <span className="font-medium">All Commands</span>
-          <span className="text-xs opacity-75 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">
-            {totalCommands}
-          </span>
-        </motion.button>
-
-        {/* Category Filters */}
-        {categories.map((category, index) => (
-          <motion.button
-            key={category.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.05 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onCategoryChange(category.id)}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
-              activeCategories.includes(category.id)
-                ? 'bg-docker-blue/20 border-docker-blue/30 text-docker-blue dark:text-docker-lightblue shadow-lg'
-                : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
-            }`}
-          >
-            {getIcon(category.icon, true)}
-            <span className="font-medium">{category.name}</span>
-            <span className="text-xs opacity-75 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">
-              {category.count}
+      {/* Accordion Header */}
+      <motion.button
+        onClick={() => setIsAccordionOpen(!isAccordionOpen)}
+        className="flex items-center justify-between w-full p-3 bg-white/10 dark:bg-slate-700/20 backdrop-blur-sm border border-white/20 dark:border-slate-600/40 rounded-lg hover:bg-white/20 dark:hover:bg-slate-600/30 transition-all duration-200"
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
+      >
+        <div className="flex items-center space-x-2">
+          <Filter className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Filters & Categories
+          </h3>
+          {(showFavorites || showPopularOnly || activeCategories.length > 0) && (
+            <span className="bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs px-2 py-1 rounded-full">
+              Active
             </span>
-          </motion.button>
-        ))}
-      </div>
+          )}
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {totalResults} result{totalResults !== 1 ? 's' : ''}
+          </span>
+          {isAccordionOpen ? (
+            <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          )}
+        </div>
+      </motion.button>
 
-      {/* Additional Filter Bubbles */}
-      <div className="flex flex-wrap gap-1.5">
-        {/* Favorites Filter */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onToggleFavorites}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
-            showFavorites
-              ? 'bg-red-100/50 dark:bg-red-900/40 text-red-600 dark:text-red-300 border-red-300/50 dark:border-red-600/50 shadow-lg'
-              : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
-          }`}
-        >
-          <Heart className={`w-3 h-3 ${showFavorites ? 'fill-current' : ''}`} />
-          <span className="font-medium">Favorites Only</span>
-        </motion.button>
+      {/* Accordion Content */}
+      <motion.div
+        initial={false}
+        animate={{
+          height: isAccordionOpen ? 'auto' : 0,
+          opacity: isAccordionOpen ? 1 : 0,
+        }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className="overflow-hidden"
+      >
+        <div className="space-y-3 pt-2">
+          {/* Category Filter Bubbles */}
+          <div className="flex flex-wrap gap-1.5">
+            {/* All Commands */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onCategoryChange(null)}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
+                activeCategories.length === 0
+                  ? 'bg-docker-blue/20 border-docker-blue/30 text-docker-blue dark:text-docker-lightblue shadow-lg'
+                  : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
+              }`}
+            >
+              <Layers className="w-3 h-3" />
+              <span className="font-medium">All Commands</span>
+              <span className="text-xs opacity-75 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">
+                {totalCommands}
+              </span>
+            </motion.button>
 
-        {/* Popular Commands Filter */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onTogglePopular}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
-            showPopularOnly
-              ? 'bg-orange-100/50 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300 border-orange-300/50 dark:border-orange-600/50 shadow-lg'
-              : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
-          }`}
-        >
-          <Star className={`w-3 h-3 ${showPopularOnly ? 'fill-current' : ''}`} />
-          <span className="font-medium">Popular Commands</span>
-        </motion.button>
+            {/* Category Filters */}
+            {categories.map((category, index) => (
+              <motion.button
+                key={category.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => onCategoryChange(category.id)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
+                  activeCategories.includes(category.id)
+                    ? 'bg-docker-blue/20 border-docker-blue/30 text-docker-blue dark:text-docker-lightblue shadow-lg'
+                    : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
+                }`}
+              >
+                {getIcon(category.icon, true)}
+                <span className="font-medium">{category.name}</span>
+                <span className="text-xs opacity-75 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">
+                  {category.count}
+                </span>
+              </motion.button>
+            ))}
+          </div>
 
-        {/* Clear All Filters */}
-        {(searchTerm || showFavorites || showPopularOnly || activeCategories.length > 0) && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              onSearchChange('')
-              onCategoryChange(null) // This will clear all categories
-              if (showFavorites) onToggleFavorites()
-              if (showPopularOnly) onTogglePopular()
-            }}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-100/50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-600/50 transition-all duration-200 border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm text-xs"
-          >
-            <X className="w-3 h-3" />
-            <span className="font-medium">Clear All</span>
-          </motion.button>
-        )}
-      </div>
+          {/* Additional Filter Bubbles */}
+          <div className="flex flex-wrap gap-1.5">
+            {/* Favorites Filter */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onToggleFavorites}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
+                showFavorites
+                  ? 'bg-red-100/50 dark:bg-red-900/40 text-red-600 dark:text-red-300 border-red-300/50 dark:border-red-600/50 shadow-lg'
+                  : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
+              }`}
+            >
+              <Heart className={`w-3 h-3 ${showFavorites ? 'fill-current' : ''}`} />
+              <span className="font-medium">Favorites Only</span>
+            </motion.button>
+
+            {/* Popular Commands Filter */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onTogglePopular}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full transition-all duration-200 backdrop-blur-sm border text-xs ${
+                showPopularOnly
+                  ? 'bg-orange-100/50 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300 border-orange-300/50 dark:border-orange-600/50 shadow-lg'
+                  : 'bg-white/20 dark:bg-slate-700/40 border-white/20 dark:border-slate-500/40 text-gray-700 dark:text-gray-200 hover:bg-white/30 dark:hover:bg-slate-600/50'
+              }`}
+            >
+              <Star className={`w-3 h-3 ${showPopularOnly ? 'fill-current' : ''}`} />
+              <span className="font-medium">Popular Commands</span>
+            </motion.button>
+
+            {/* Clear All Filters */}
+            {(searchTerm || showFavorites || showPopularOnly || activeCategories.length > 0) && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  onSearchChange('')
+                  onCategoryChange(null) // This will clear all categories
+                  if (showFavorites) onToggleFavorites()
+                  if (showPopularOnly) onTogglePopular()
+                }}
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-100/50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-600/50 transition-all duration-200 border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm text-xs"
+              >
+                <X className="w-3 h-3" />
+                <span className="font-medium">Clear All</span>
+              </motion.button>
+            )}
+          </div>
+        </div>
+      </motion.div>
     </div>
   )
 }

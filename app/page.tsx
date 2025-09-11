@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronUp } from 'lucide-react'
 import Header from '@/components/Header'
 import CommandCard from '@/components/CommandCard'
 import SearchAndFilter from '@/components/SearchAndFilter'
@@ -17,11 +18,25 @@ export default function Home() {
   const [showFavorites, setShowFavorites] = useState(false)
   const [showPopularOnly, setShowPopularOnly] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [showBackToTop, setShowBackToTop] = useState(false)
 
   // Load favorites on mount
   useEffect(() => {
     setMounted(true)
     setFavorites(FavoritesManager.getFavorites())
+  }, [])
+
+  // Handle scroll to show/hide back-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button after scrolling past roughly where the first card would be
+      // Account for header (64px) + search bar (112px) + filters (80px) + some margin (200px)
+      const scrollThreshold = 400
+      setShowBackToTop(window.scrollY > scrollThreshold)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   // Filter commands based on current filters
@@ -70,6 +85,14 @@ export default function Home() {
           : [...prev, categoryId]
       )
     }
+  }
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
   }
 
   // Container variants for animation
@@ -269,6 +292,49 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {filteredCommands.length >= 5 && showBackToTop && (
+          <motion.button
+          initial={{ opacity: 0, y: 20, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            y: 0, 
+            scale: 1,
+            boxShadow: [
+              '0 4px 20px rgba(36, 150, 237, 0.4), 0 0 20px rgba(36, 150, 237, 0.2)',
+              '0 6px 30px rgba(36, 150, 237, 0.6), 0 0 30px rgba(36, 150, 237, 0.4)',
+              '0 4px 20px rgba(36, 150, 237, 0.4), 0 0 20px rgba(36, 150, 237, 0.2)'
+            ]
+          }}
+          exit={{ opacity: 0, y: 20, scale: 0.8 }}
+          whileHover={{ 
+            scale: 1.1,
+            boxShadow: '0 8px 40px rgba(36, 150, 237, 0.8)'
+          }}
+          whileTap={{ scale: 0.9 }}
+          onClick={scrollToTop}
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 p-4 text-white rounded-full backdrop-blur-xl border border-white/30 transition-all duration-300"
+          style={{
+            background: 'linear-gradient(135deg, rgba(36, 150, 237, 0.2), rgba(29, 78, 216, 0.3))',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          }}
+          transition={{
+            boxShadow: {
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            },
+            default: { duration: 0.3, ease: 'easeOut' }
+          }}
+          title="Back to top"
+        >
+          <ChevronUp className="w-6 h-6 drop-shadow-lg" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

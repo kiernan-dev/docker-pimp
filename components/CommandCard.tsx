@@ -53,7 +53,25 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
     >
       {/* Glassmorphic Card */}
       <div className="relative bg-white/20 dark:bg-slate-800/40 backdrop-blur-xl border border-white/20 dark:border-slate-600/40 rounded-2xl shadow-xl overflow-hidden">
-        {/* Gradient Background Overlay */}
+        {/* Animated Gradient Background Overlay */}
+        <motion.div 
+          className="absolute inset-0"
+          animate={{
+            background: [
+              'linear-gradient(45deg, rgba(255,255,255,0.25) 0%, rgba(59,130,246,0.15) 50%, rgba(255,255,255,0.25) 100%)',
+              'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(255,255,255,0.25) 50%, rgba(168,85,247,0.15) 100%)',
+              'linear-gradient(225deg, rgba(168,85,247,0.15) 0%, rgba(59,130,246,0.15) 50%, rgba(255,255,255,0.25) 100%)',
+              'linear-gradient(315deg, rgba(255,255,255,0.25) 0%, rgba(168,85,247,0.15) 50%, rgba(59,130,246,0.15) 100%)',
+              'linear-gradient(45deg, rgba(255,255,255,0.25) 0%, rgba(59,130,246,0.15) 50%, rgba(255,255,255,0.25) 100%)'
+            ]
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        {/* Static Gradient Background Overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent dark:from-slate-600/15 dark:to-transparent" />
         
         {/* Card Content */}
@@ -76,7 +94,7 @@ export default function CommandCard({ command, isFavorite, onToggleFavorite }: C
                   )}
                 </div>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed min-h-[4.2rem]">
                 {command.description}
               </p>
             </div>
