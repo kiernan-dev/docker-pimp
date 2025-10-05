@@ -275,13 +275,12 @@ export default function Home() {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="flex flex-wrap gap-6"
+                className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
               >
                 {filteredCommands.map((command) => (
                   <motion.div 
                     key={command.id} 
                     variants={itemVariants}
-                    className="w-full lg:w-[calc(50%-12px)] xl:w-[calc(33.333%-16px)]"
                   >
                     <CommandCard
                       command={command}
