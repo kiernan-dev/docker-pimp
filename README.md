@@ -63,7 +63,3 @@ docker-pimp/
 ## License
 
 MIT License
-
-## Author
-
-**Kiernan**
