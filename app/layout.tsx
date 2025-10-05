@@ -10,9 +10,9 @@ export const metadata: Metadata = {
   keywords: ['docker', 'docker pimp', 'cheat sheet', 'terminal', 'commands', 'containers', 'kubernetes', 'devops'],
   authors: [{ name: 'Kiernan' }],
   icons: {
-    icon: '/favicon.png',
-    shortcut: '/favicon.png',
-    apple: '/favicon.png',
+    icon: 'favicon.png',
+    shortcut: 'favicon.png',
+    apple: 'favicon.png',
   },
 }
 
