@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
+const basePath = process.env.NODE_ENV === 'production' ? '/dockerpimp' : '';
 
 export const metadata: Metadata = {
   title: 'Docker Pimp | Your Ultimate Docker Commands Companion',
@@ -10,9 +11,9 @@ export const metadata: Metadata = {
   keywords: ['docker', 'docker pimp', 'cheat sheet', 'terminal', 'commands', 'containers', 'kubernetes', 'devops'],
   authors: [{ name: 'Kiernan' }],
   icons: {
-    icon: 'favicon.png',
-    shortcut: 'favicon.png',
-    apple: 'favicon.png',
+    icon: `${basePath}/favicon.png`,
+    shortcut: `${basePath}/favicon.png`,
+    apple: `${basePath}/favicon.png`,
   },
 }
 
