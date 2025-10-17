@@ -59,7 +59,3 @@ docker-pimp/
 ├── lib/             # Docker commands data & utilities
 └── public/          # Static assets
 ```
-
-## License
-
-MIT License
